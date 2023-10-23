@@ -1,0 +1,50 @@
+<template id="template_id">
+  <div>
+    <h1>Interview Topics</h1>
+    <v-list>
+      <v-list-item-group v-model="selectedTopic" @change="viewTopicDetail">
+        <v-list-item v-for="topic in topics" :key="topic.id">
+          <v-list-item-content>
+            <v-list-item-title>{{ topic.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-item-group>
+    </v-list>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      selectedTopic: null,
+      topics: []
+    };
+  },
+  methods: {
+    viewTopicDetail() {
+      const selectedTopicId = this.topics[this.selectedTopic].id;
+      this.$router.push({ name: 'topic-detail', params: { id: selectedTopicId } });
+    }
+  },
+  created() {
+    // Fetch topics from the API
+    this.fetchTopics();
+  },
+  methods: {
+    fetchTopics() {
+      const url = '/godidgroup/com/interview/assistant/api/interview_topics_new/paged.jss';
+      const param = {
+        filter: {}
+      };
+      http.call(url, param, (data) => {
+        if (data.code === 'success') {
+          this.topics = data.data.list;
+        } else {
+          app.error(data.msg);
+        }
+      });
+    }
+  }
+};
+</script>
